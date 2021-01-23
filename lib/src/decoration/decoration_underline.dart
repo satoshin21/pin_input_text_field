@@ -8,7 +8,7 @@ class UnderlineDecoration extends PinDecoration
   final double gapSpace;
 
   /// The gaps between every two adjacent box, higher priority than [gapSpace].
-  final List<double> gapSpaces;
+  final List<double>? gapSpaces;
 
   /// The color of the underline of index character.
   final ColorBuilder colorBuilder;
@@ -17,18 +17,18 @@ class UnderlineDecoration extends PinDecoration
   final double lineHeight;
 
   /// The background color of index character.
-  final ColorBuilder bgColorBuilder;
+  final ColorBuilder? bgColorBuilder;
 
   const UnderlineDecoration({
-    TextStyle textStyle,
-    ObscureStyle obscureStyle,
-    String errorText,
-    TextStyle errorTextStyle,
-    String hintText,
-    TextStyle hintTextStyle,
+    TextStyle? textStyle,
+    ObscureStyle? obscureStyle,
+    String? errorText,
+    TextStyle? errorTextStyle,
+    String? hintText,
+    TextStyle? hintTextStyle,
     this.gapSpace: 16.0,
     this.gapSpaces,
-    @required this.colorBuilder,
+    required this.colorBuilder,
     this.lineHeight: 2.0,
     this.bgColorBuilder,
   })  : assert(colorBuilder != null),
@@ -47,13 +47,13 @@ class UnderlineDecoration extends PinDecoration
 
   @override
   PinDecoration copyWith({
-    TextStyle textStyle,
-    ObscureStyle obscureStyle,
-    String errorText,
-    TextStyle errorTextStyle,
-    String hintText,
-    TextStyle hintTextStyle,
-    ColorBuilder bgColorBuilder,
+    TextStyle? textStyle,
+    ObscureStyle? obscureStyle,
+    String? errorText,
+    TextStyle? errorTextStyle,
+    String? hintText,
+    TextStyle? hintTextStyle,
+    ColorBuilder? bgColorBuilder,
   }) {
     return UnderlineDecoration(
       textStyle: textStyle ?? this.textStyle,
@@ -71,8 +71,8 @@ class UnderlineDecoration extends PinDecoration
   }
 
   @override
-  void notifyChange(String pin) {
-    colorBuilder.notifyChange(pin);
+  void notifyChange(String? pin) {
+    colorBuilder.notifyChange(pin!);
     bgColorBuilder?.notifyChange(pin);
   }
 
@@ -82,7 +82,7 @@ class UnderlineDecoration extends PinDecoration
     Size size,
     String text,
     int pinLength,
-    Cursor cursor,
+    Cursor? cursor,
   ) {
     /// Calculate the height of paint area for drawing the pin field.
     /// it should honor the error text (if any) drawn by
@@ -90,8 +90,8 @@ class UnderlineDecoration extends PinDecoration
     /// but, since we can access the drawn textfield behind from here,
     /// we use a simple logic to calculate it.
     double mainHeight;
-    if (errorText != null && errorText.isNotEmpty) {
-      mainHeight = size.height - (errorTextStyle.fontSize + 8.0);
+    if (errorText != null && errorText!.isNotEmpty) {
+      mainHeight = size.height - (errorTextStyle?.fontSize ?? 0 + 8.0);
     } else {
       mainHeight = size.height;
     }
@@ -102,7 +102,7 @@ class UnderlineDecoration extends PinDecoration
       ..isAntiAlias = true;
 
     /// Assign paint if [bgColorBuilder] is not null
-    Paint insidePaint;
+    Paint? insidePaint;
     if (bgColorBuilder != null) {
       insidePaint = Paint()
         ..style = PaintingStyle.fill
@@ -122,9 +122,10 @@ class UnderlineDecoration extends PinDecoration
     double singleWidth = (size.width - gapTotalLength) / pinLength;
 
     for (int i = 0; i < pinLength; i++) {
-      if (errorText != null && errorText.isNotEmpty) {
+      if (errorText != null && errorText!.isNotEmpty) {
         /// only draw error-color as underline-color if errorText is not null
-        underlinePaint.color = errorTextStyle.color;
+        underlinePaint.color =
+            errorTextStyle?.color ?? colorBuilder.indexProperty(i);
       } else {
         underlinePaint.color = colorBuilder.indexProperty(i);
       }
@@ -133,7 +134,7 @@ class UnderlineDecoration extends PinDecoration
       if (insidePaint != null) {
         canvas.drawRect(
             Rect.fromLTWH(startX, 0, singleWidth, startY - lineHeight / 2),
-            insidePaint..color = bgColorBuilder.indexProperty(i));
+            insidePaint..color = bgColorBuilder!.indexProperty(i));
       }
       startX += singleWidth + (i == pinLength - 1 ? 0 : actualGapSpaces[i]);
     }
@@ -144,13 +145,13 @@ class UnderlineDecoration extends PinDecoration
     startY = 0.0;
 
     /// Determine whether display obscureText.
-    bool obscureOn = obscureStyle != null && obscureStyle.isTextObscure;
+    bool obscureOn = obscureStyle != null && obscureStyle!.isTextObscure;
     TextPainter textPainter;
 
     text.runes.forEach((rune) {
       String code;
       if (obscureOn) {
-        code = obscureStyle.obscureText;
+        code = obscureStyle!.obscureText;
       } else {
         code = String.fromCharCode(rune);
       }
@@ -178,7 +179,7 @@ class UnderlineDecoration extends PinDecoration
       index++;
     });
 
-    if (cursor.enabled && index < pinLength) {
+    if (cursor != null && cursor.enabled && index < pinLength) {
       drawCursor(
         canvas,
         size,
@@ -191,7 +192,7 @@ class UnderlineDecoration extends PinDecoration
         cursor,
       );
     } else if (hintText != null) {
-      hintText.substring(index).runes.forEach((rune) {
+      hintText!.substring(index).runes.forEach((rune) {
         String code = String.fromCharCode(rune);
         textPainter = TextPainter(
           text: TextSpan(
@@ -220,7 +221,7 @@ class UnderlineDecoration extends PinDecoration
   double get getGapWidth => gapSpace;
 
   @override
-  List<double> get getGapWidthList => gapSpaces;
+  List<double>? get getGapWidthList => gapSpaces;
 
   @override
   bool operator ==(Object other) =>
