@@ -1,4 +1,8 @@
-[NullSafety Changelog](./NULL_SAFETY_CHANGELOG.md)
+## [4.0.0] - 2021/03/14
+* Migrate to Null Safety
+
+## [3.3.1] - 2021/02/07
+* New : `StrokeCap` for UnderlineDecoration.
 
 ## [3.3.0] - 2020/12/30
 * Update: `inputFormatter` replace with `inputFormatters` to keep same as TextField.
